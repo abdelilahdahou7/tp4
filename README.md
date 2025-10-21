@@ -38,18 +38,3 @@ CREATE DATABASE tp_hibernate OWNER mon_user;
 ```
 
 N'oubliez pas de mettre à jour les propriétés `connection.username` et `connection.password` dans le fichier `hibernate.cfg.xml` avec ces informations.
-
-### Utiliser une base de données Cloud (ElephantSQL)
-ElephantSQL est un service qui fournit des bases de données PostgreSQL hébergées.
-1.  Créez un compte sur [ElephantSQL](https://www.elephantsql.com/).
-2.  Créez une nouvelle instance (le plan gratuit "Tiny Turtle" est suffisant).
-3.  Une fois l'instance créée, allez dans la page des détails. Vous y trouverez toutes les informations de connexion (Server, User & Default database, Password, Port).
-4.  Composez l'URL JDBC à partir de ces informations. Elle ressemblera à ceci :
-    `jdbc:postgresql://<server>:<port>/<user_&_default_database>`
-5.  Mettez à jour le fichier `hibernate.cfg.xml` avec cette URL, ainsi que votre nom d'utilisateur et votre mot de passe.
-
-### Lancer l'application et les tests
-- **Via un IDE (IntelliJ, Eclipse...)** : Importez le projet en tant que projet Maven. L'IDE téléchargera les dépendances. Vous pourrez ensuite faire un clic droit sur le fichier `Main.java` et choisir "Run" pour exécuter la classe de test principale, ou faire un clic droit sur les classes de test dans `src/test/java` et choisir "Run" pour lancer les tests JUnit.
-- **Via la ligne de commande Maven** : Assurez-vous que Maven est installé et configuré. Placez-vous à la racine du projet et exécutez les commandes suivantes :
-    - `mvn clean install` : Pour compiler le projet et lancer les tests.
-    - `mvn exec:java -Dexec.mainClass="org.example.Main"` : Pour exécuter la classe `Main` après la compilation.
