@@ -1,17 +1,29 @@
-package org.example;
+package ma.projet;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import ma.projet.entities.Machine;
+import ma.projet.entities.Salle;
+import ma.projet.service.MachineService;
+import ma.projet.service.SalleService;
+
+import java.util.Date;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        SalleService ss = new SalleService();
+        MachineService ms = new MachineService();
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        // Créer des salles
+        ss.create(new Salle("SA"));
+        ss.create(new Salle("SB"));
+
+        // Créer des machines
+        ms.create(new Machine("M01", "HP", new Date(), ss.findById(1)));
+        ms.create(new Machine("M02", "Dell", new Date(), ss.findById(1)));
+        ms.create(new Machine("M03", "Lenovo", new Date(), ss.findById(2)));
+
+        // Afficher les machines
+        for(Machine m : ms.findAll()){
+            System.out.println(m.getRef());
         }
     }
 }
