@@ -38,3 +38,6 @@ CREATE DATABASE tp_hibernate OWNER mon_user;
 ```
 
 N'oubliez pas de mettre à jour les propriétés `connection.username` et `connection.password` dans le fichier `hibernate.cfg.xml` avec ces informations.
+
+<img width="1914" height="1032" alt="image" src="https://github.com/user-attachments/assets/264d1865-f1c6-4ad1-b62b-aa7bae6e1891" />
+
