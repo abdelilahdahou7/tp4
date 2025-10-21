@@ -1,55 +1,91 @@
-# TP Java Hibernate : Gestion d'un parc de machines avec PostgreSQL
+# TP : De Monolithe à Microservice avec Spring Boot
 
 ## 1. Introduction
 
 ### Contexte
-Ce Travail Pratique (TP) vise à construire une application Java pour gérer un parc de machines, où chaque machine est assignée à une salle. L'objectif principal est de maîtriser la persistance des données en utilisant l'ORM Hibernate avec une base de données PostgreSQL.
+Ce TP fait suite au précédent exercice sur Hibernate. Nous allons prendre les concepts de base (entités, persistance) et les faire évoluer vers une architecture microservice moderne, robuste et scalable en utilisant le framework Spring Boot.
 
-### Objectifs du TP
-- Configurer un projet Java/Maven pour intégrer Hibernate et PostgreSQL.
-- Mettre en œuvre une architecture en couches (Services, DAO, Entités).
-- Maîtriser les annotations JPA pour le mapping objet-relationnel.
-- Gérer les sessions et les transactions Hibernate.
-- Écrire des tests unitaires robustes avec JUnit.
+L'objectif est de transformer notre application de gestion de parc de machines en un service de persistance autonome, exposant ses fonctionnalités via une API REST. Cela permet à d'autres services (applications web, mobiles, autres microservices) de consommer les données de manière sécurisée et standardisée.
 
-### Choix de PostgreSQL
-PostgreSQL a été choisi pour ce TP en raison de ses nombreux avantages :
-- **Open Source et Gratuit** : C'est un système de gestion de base de données relationnel-objet puissant et entièrement gratuit.
-- **Robustesse et Fiabilité** : Réputé pour sa stabilité, sa conformité aux standards SQL et sa gestion avancée des transactions (ACID).
-- **Extensibilité** : Supporte une grande variété de types de données (JSON, XML, géospatiales...) et permet de définir des types et des fonctions personnalisés.
-- **Fonctionnalités Avancées** : Offre des fonctionnalités avancées comme l'héritage de tables, le partitionnement et un contrôle de la concurrence sophistiqué (MVCC).
-C'est un excellent choix pour des applications d'entreprise nécessitant fiabilité et scalabilité.
+### Architecture Cible
+Nous allons mettre en place l'architecture suivante :
 
-## 2. Conseils d’exécution
+- **Couche de Contrôleurs (Controllers)** : Des contrôleurs REST qui exposent les points d'entrée (endpoints) de notre API pour les opérations CRUD (Créer, Lire, Mettre à jour, Supprimer).
+- **Couche de Service (Services)** : Contient la logique métier (validation, calculs, etc.). Elle est transactionnelle pour garantir l'intégrité des données.
+- **Couche d'Accès aux Données (Repositories)** : Gérée par Spring Data JPA, cette couche simplifie à l'extrême les interactions avec la base de données.
+- **Couche de Domaine (Entities)** : Nos objets Java (POJOs) qui représentent les tables de la base de données.
 
-### Prérequis
-- Avoir un serveur PostgreSQL installé et accessible.
-- Avoir créé une base de données (par exemple, `tp_hibernate`).
+Voici un schéma simplifié de l'architecture :
 
-### Configuration locale de PostgreSQL
-Si vous avez PostgreSQL en local, vous pouvez créer un utilisateur et une base de données avec les commandes suivantes via l'interpréteur `psql` :
+```
++-----------------+      +-----------------+      +-----------------+
+|  Client REST    |----->|   Controllers   |----->|     Services    |
+| (Postman, App)  |      |  (API Endpoints)|      | (Logique Métier)| 
++-----------------+      +-----------------+      +-----------------+
+                                                        |
+                                                        v
++-----------------+      +-----------------+      +-----------------+
+|   Base de données |<-----|   Repositories  |<-----|     Entités     |
+|   (PostgreSQL)  |      | (Spring Data JPA)|      |      (JPA)      |
++-----------------+      +-----------------+      +-----------------+
 
-```sql
--- Crée un nouvel utilisateur avec un mot de passe
-CREATE USER mon_user WITH PASSWORD 'mon_mot_de_passe';
+## 2. Structure Finale du Projet
 
--- Crée une nouvelle base de données
-CREATE DATABASE tp_hibernate OWNER mon_user;
+```
+lab154/
+├── .mvn/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── ma/
+│   │   │       └── projet/
+│   │   │           ├── Lab154Application.java
+│   │   │           ├── controllers/
+│   │   │           │   ├── MachineController.java
+│   │   │           │   ├── MaintenanceController.java
+│   │   │           │   ├── SalleController.java
+│   │   │           │   └── TechnicienController.java
+│   │   │           ├── dao/
+│   │   │           │   ├── MachineRepository.java
+│   │   │           │   ├── MaintenanceRepository.java
+│   │   │           │   ├── SalleRepository.java
+│   │   │           │   └── TechnicienRepository.java
+│   │   │           ├── entities/
+│   │   │           │   ├── Machine.java
+│   │   │           │   ├── Maintenance.java
+│   │   │           │   ├── Salle.java
+│   │   │           │   └── Technicien.java
+│   │   │           └── services/
+│   │   │               ├── MachineService.java
+│   │   │               ├── MaintenanceService.java
+│   │   │               ├── SalleService.java
+│   │   │               └── TechnicienService.java
+│   │   └── resources/
+│   │       └── application.properties
+│   └── test/
+│       └── java/
+│           └── ma/
+│               └── projet/
+│                   └── SalleControllerTest.java
+├── Dockerfile
+├── docker-compose.yml
+├── pom.xml
+└── README.md
 ```
 
-N'oubliez pas de mettre à jour les propriétés `connection.username` et `connection.password` dans le fichier `hibernate.cfg.xml` avec ces informations.
+## 3. Déploiement avec Docker
 
-### Utiliser une base de données Cloud (ElephantSQL)
-ElephantSQL est un service qui fournit des bases de données PostgreSQL hébergées.
-1.  Créez un compte sur [ElephantSQL](https://www.elephantsql.com/).
-2.  Créez une nouvelle instance (le plan gratuit "Tiny Turtle" est suffisant).
-3.  Une fois l'instance créée, allez dans la page des détails. Vous y trouverez toutes les informations de connexion (Server, User & Default database, Password, Port).
-4.  Composez l'URL JDBC à partir de ces informations. Elle ressemblera à ceci :
-    `jdbc:postgresql://<server>:<port>/<user_&_default_database>`
-5.  Mettez à jour le fichier `hibernate.cfg.xml` avec cette URL, ainsi que votre nom d'utilisateur et votre mot de passe.
+1.  **Construire l'application** : Assurez-vous que Docker est en cours d'exécution, puis à la racine du projet, lancez la commande Maven pour packager votre application en un fichier JAR.
 
-### Lancer l'application et les tests
-- **Via un IDE (IntelliJ, Eclipse...)** : Importez le projet en tant que projet Maven. L'IDE téléchargera les dépendances. Vous pourrez ensuite faire un clic droit sur le fichier `Main.java` et choisir "Run" pour exécuter la classe de test principale, ou faire un clic droit sur les classes de test dans `src/test/java` et choisir "Run" pour lancer les tests JUnit.
-- **Via la ligne de commande Maven** : Assurez-vous que Maven est installé et configuré. Placez-vous à la racine du projet et exécutez les commandes suivantes :
-    - `mvn clean install` : Pour compiler le projet et lancer les tests.
-    - `mvn exec:java -Dexec.mainClass="org.example.Main"` : Pour exécuter la classe `Main` après la compilation.
+    ```bash
+    mvn clean package
+    ```
+
+2.  **Lancer les conteneurs** : Utilisez Docker Compose pour construire l'image de votre application et lancer les conteneurs de l'application et de la base de données.
+
+    ```bash
+    docker-compose up --build
+    ```
+
+Votre microservice sera alors accessible à l'adresse `http://localhost:8080`.
+```
