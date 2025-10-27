@@ -50,4 +50,7 @@ Pour exécuter les tests unitaires :
 
 ```bash
 mvn test
+
+<img width="1580" height="716" alt="image" src="https://github.com/user-attachments/assets/ec03a1c9-3161-479a-bb68-18aa940b7880" />
+
 ```
