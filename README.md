@@ -1,96 +1,53 @@
-# TP : De Monolithe à Microservice avec Spring Boot
+# TP Hibernate/MySQL
 
-## 1. Introduction
+Ce projet est une implémentation d'un TP utilisant Hibernate pour la persistance des données avec une base de données MySQL.
+Il gère deux entités principales : `Salle` et `Machine`, avec une relation One-to-Many entre elles.
 
-### Contexte
-Ce TP fait suite au précédent exercice sur Hibernate. Nous allons prendre les concepts de base (entités, persistance) et les faire évoluer vers une architecture microservice moderne, robuste et scalable en utilisant le framework Spring Boot.
+## Structure du projet
 
-L'objectif est de transformer notre application de gestion de parc de machines en un service de persistance autonome, exposant ses fonctionnalités via une API REST. Cela permet à d'autres services (applications web, mobiles, autres microservices) de consommer les données de manière sécurisée et standardisée.
+- `pom.xml`: Fichier de configuration Maven avec les dépendances Hibernate, MySQL Connector et JUnit 5.
+- `src/main/java/org/example/entities`: Contient les classes d'entité `Entity`, `Salle` et `Machine`.
+- `src/main/java/org/example/dao`: Contient l'interface générique `IDao` et ses implémentations `SalleDao` et `MachineDao`.
+- `src/main/java/org/example/services`: Contient les services `SalleService` et `MachineService` pour la logique métier.
+- `src/main/java/org/example/util/HibernateUtil.java`: Classe utilitaire pour la gestion de la SessionFactory Hibernate.
+- `src/main/resources/hibernate.cfg.xml`: Fichier de configuration Hibernate pour la connexion à la base de données MySQL.
+- `src/main/java/org/example/Main.java`: Classe principale pour démontrer les fonctionnalités CRUD et les requêtes spécifiques.
+- `src/test/java/org/example`: Contient les tests unitaires pour `SalleService` et `MachineService`.
 
-### Architecture Cible
-Nous allons mettre en place l'architecture suivante :
+## Prérequis
 
-- **Couche de Contrôleurs (Controllers)** : Des contrôleurs REST qui exposent les points d'entrée (endpoints) de notre API pour les opérations CRUD (Créer, Lire, Mettre à jour, Supprimer).
-- **Couche de Service (Services)** : Contient la logique métier (validation, calculs, etc.). Elle est transactionnelle pour garantir l'intégrité des données.
-- **Couche d'Accès aux Données (Repositories)** : Gérée par Spring Data JPA, cette couche simplifie à l'extrême les interactions avec la base de données.
-- **Couche de Domaine (Entities)** : Nos objets Java (POJOs) qui représentent les tables de la base de données.
+- Java Development Kit (JDK) 8 ou supérieur
+- Apache Maven
+- Serveur MySQL en cours d'exécution
 
-Voici un schéma simplifié de l'architecture :
+## Configuration de la base de données
 
-```
-+-----------------+      +-----------------+      +-----------------+
-|  Client REST    |----->|   Controllers   |----->|     Services    |
-| (Postman, App)  |      |  (API Endpoints)|      | (Logique Métier)| 
-+-----------------+      +-----------------+      +-----------------+
-                                                        |
-                                                        v
-+-----------------+      +-----------------+      +-----------------+
-|   Base de données |<-----|   Repositories  |<-----|     Entités     |
-|   (PostgreSQL)  |      | (Spring Data JPA)|      |      (JPA)      |
-+-----------------+      +-----------------+      +-----------------+
+Le fichier `src/main/resources/hibernate.cfg.xml` est configuré pour se connecter à une base de données MySQL nommée `hibernate_db` sur `localhost:3306` avec l'utilisateur `root` et un mot de passe vide. La base de données sera créée automatiquement si elle n'existe pas (`createDatabaseIfNotExist=true`).
 
-## 2. Structure Finale du Projet
-
-```
-lab154/
-├── .mvn/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── ma/
-│   │   │       └── projet/
-│   │   │           ├── Lab154Application.java
-│   │   │           ├── controllers/
-│   │   │           │   ├── MachineController.java
-│   │   │           │   ├── MaintenanceController.java
-│   │   │           │   ├── SalleController.java
-│   │   │           │   └── TechnicienController.java
-│   │   │           ├── dao/
-│   │   │           │   ├── MachineRepository.java
-│   │   │           │   ├── MaintenanceRepository.java
-│   │   │           │   ├── SalleRepository.java
-│   │   │           │   └── TechnicienRepository.java
-│   │   │           ├── entities/
-│   │   │           │   ├── Machine.java
-│   │   │           │   ├── Maintenance.java
-│   │   │           │   ├── Salle.java
-│   │   │           │   └── Technicien.java
-│   │   │           └── services/
-│   │   │               ├── MachineService.java
-│   │   │               ├── MaintenanceService.java
-│   │   │               ├── SalleService.java
-│   │   │               └── TechnicienService.java
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
-│       └── java/
-│           └── ma/
-│               └── projet/
-│                   └── SalleControllerTest.java
-├── Dockerfile
-├── docker-compose.yml
-├── pom.xml
-└── README.md
+```xml
+<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/hibernate_db?createDatabaseIfNotExist=true</property>
+<property name="hibernate.connection.username">root</property>
+<property name="hibernate.connection.password"></property>
 ```
 
-## 3. Déploiement avec Docker
+Assurez-vous que ces informations correspondent à votre configuration MySQL.
 
-<<<<<<< HEAD
-1.  **Construire l'application** : Assurez-vous que Docker est en cours d'exécution, puis à la racine du projet, lancez la commande Maven pour packager votre application en un fichier JAR.
+## Compilation et exécution
 
-    ```bash
-    mvn clean package
-    ```
+Pour compiler le projet :
 
-2.  **Lancer les conteneurs** : Utilisez Docker Compose pour construire l'image de votre application et lancer les conteneurs de l'application et de la base de données.
-
-    ```bash
-    docker-compose up --build
-    ```
-
-Votre microservice sera alors accessible à l'adresse `http://localhost:8080`.
+```bash
+mvn clean install
 ```
-=======
-<img width="1914" height="1032" alt="image" src="https://github.com/user-attachments/assets/264d1865-f1c6-4ad1-b62b-aa7bae6e1891" />
 
->>>>>>> 07cee001c04f48bdfa9b0cbb41435f782d03a0a4
+Pour exécuter la classe principale de démonstration :
+
+```bash
+mvn exec:java -Dexec.mainClass="org.example.Main"
+```
+
+Pour exécuter les tests unitaires :
+
+```bash
+mvn test
+```
