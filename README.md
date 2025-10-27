@@ -75,6 +75,7 @@ lab154/
 
 ## 3. Déploiement avec Docker
 
+<<<<<<< HEAD
 1.  **Construire l'application** : Assurez-vous que Docker est en cours d'exécution, puis à la racine du projet, lancez la commande Maven pour packager votre application en un fichier JAR.
 
     ```bash
@@ -89,3 +90,7 @@ lab154/
 
 Votre microservice sera alors accessible à l'adresse `http://localhost:8080`.
 ```
+=======
+<img width="1914" height="1032" alt="image" src="https://github.com/user-attachments/assets/264d1865-f1c6-4ad1-b62b-aa7bae6e1891" />
+
+>>>>>>> 07cee001c04f48bdfa9b0cbb41435f782d03a0a4
